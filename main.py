@@ -1,6 +1,7 @@
 import cv2
 
 # img = cv2.imread("lena.png")
+thres = 0.7 #Threshold to check an object
 
 cap = cv2.VideoCapture(0)
 cap.set(3, 640)
@@ -22,13 +23,16 @@ net.setInputSwapRB(True)
 
 while True:
     success, img = cap.read()
-    classIds, confs, bbox = net.detect(img, confThreshold=0.5)
+    classIds, confs, bbox = net.detect(img, confThreshold=thres)
     print(classIds, bbox)
 
-    if len(classIds)!=0:
+    if len(classIds) != 0:
         for classId, confidence, box in zip(classIds.flatten(), confs.flatten(), bbox):
             cv2.rectangle(img, box, color=(0, 255, 0), thickness=2)
             cv2.putText(img, classNames[classId - 1].upper(), (box[0] + 10, box[1] + 30), cv2.FONT_HERSHEY_COMPLEX, 1,
+                        (0, 255, 0), 2)
+
+            cv2.putText(img, str(round(confidence*100),2), (box[0] + 200, box[1] + 30), cv2.FONT_HERSHEY_COMPLEX, 1,
                         (0, 255, 0), 2)
 
     cv2.imshow("Output", img)
